@@ -61,10 +61,12 @@ class Ambiente:
 
     def handle_click(self, pos):
         """
-        Maneja los eventos de clic del mouse para detectar suciedad alrededor del punto clickeado.
+        Maneja los eventos de clic del mouse para limpiar directamente la celda en la posición clickeada.
+        
+        Args:
+            pos (tuple): Posición (x, y) del clic del mouse en la ventana.
         """
-        x, y = pos
-        self.detect_dirt_around(x, y, 80)
+        self.clean_cell(pos)
         
     def add_dirt(self):
         """
@@ -142,6 +144,22 @@ class Ambiente:
         # if time.time() - self.last_dirt_time > 0.01:
         self.add_dirt()
         self.last_dirt_time = time.time()
+
+    def clean_cell(self, pos):
+        """
+        Limpia una celda específica en la grilla basándose en la posición del clic del mouse,
+        cambiando su estado a limpio.
+
+        Args:
+            pos (tuple): Posición (x, y) del clic del mouse en píxeles.
+        """
+        x, y = pos
+        grid_x = x // self.SQUARE_SIZE  # Convierte la coordenada x del clic en índice de columna de la grilla
+        grid_y = y // self.SQUARE_SIZE  # Convierte la coordenada y del clic en índice de fila de la grilla
+
+        if 0 <= grid_x < self.COLS and 0 <= grid_y < self.ROWS:  # Verifica que las coordenadas estén dentro de los límites de la grilla
+            self.grid[grid_y, grid_x] = 0  # Cambia el estado de la celda a limpio
+            print(f"Celda limpiada en posición ({grid_x}, {grid_y}).")
 
     def run(self):
         """
