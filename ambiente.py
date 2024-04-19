@@ -4,6 +4,7 @@ import random
 import time
 import math
 from robot import Robot
+from controlador import Controlador
 
 class Ambiente:
     def __init__(self):
@@ -29,9 +30,10 @@ class Ambiente:
                                 y * self.SQUARE_SIZE + self.SQUARE_SIZE // 2) for x in range(self.COLS)]
                                 for y in range(self.ROWS)])
         self.last_dirt_time = time.time()
+        self.controlador = Controlador()
         self.robots = [
-            Robot(self, self.WIDTH, self.HEIGHT),  # Primer robot
-            Robot(self, self.WIDTH, self.HEIGHT),
+            Robot(self, self.WIDTH, self.HEIGHT, self.controlador),  # Primer robot
+            Robot(self, self.WIDTH, self.HEIGHT, self.controlador)   # Segundo robot
         ]
 
     def detect_dirt_around(self, pos_x, pos_y, radius=800):

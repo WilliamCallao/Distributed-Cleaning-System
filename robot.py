@@ -3,7 +3,7 @@ import random
 import math
 
 class Robot(pygame.sprite.Sprite):
-    def __init__(self, ambiente, width, height):
+    def __init__(self, ambiente, width, height, controlador):
         super().__init__()
         # Cargar la imagen PNG
         self.image = pygame.image.load('robot_image.png')  # Asegúrate de que 'robot_image.png' sea el nombre correcto de tu archivo.
@@ -16,6 +16,7 @@ class Robot(pygame.sprite.Sprite):
         self.ambiente = ambiente
         self.width = width
         self.height = height
+        self.controlador = controlador
         # Velocidad y dirección iniciales aleatorias
         self.velocity = [random.choice([-1, 1]), random.choice([-4, 4])]
         
@@ -47,4 +48,6 @@ class Robot(pygame.sprite.Sprite):
             self.rect.centerx, self.rect.centery, 80)
         
         for cell_x, cell_y in dirty_cells:
-            self.ambiente.mark_cell_as_detected(cell_x, cell_y)
+            # Verifica si la celda ya ha sido detectada usando el controlador
+            if self.ambiente.controlador.add_detected_dirt((cell_x, cell_y)):
+                self.ambiente.mark_cell_as_detected(cell_x, cell_y)
