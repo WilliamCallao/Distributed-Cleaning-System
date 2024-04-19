@@ -5,33 +5,46 @@ import math
 class Robot(pygame.sprite.Sprite):
     def __init__(self, ambiente, width, height, controlador):
         super().__init__()
-        # Cargar la imagen PNG
-        self.image = pygame.image.load('robot_image.png')  # Asegúrate de que 'robot_image.png' sea el nombre correcto de tu archivo.
-        self.image = pygame.transform.scale(self.image, (50, 60))  # Ajustar el tamaño de la imagen a 20x20 píxeles
-
-        # Posición inicial aleatoria dentro de los límites de la ventana
-        x = random.randint(0, width)
-        y = random.randint(0, height)
-        self.rect = self.image.get_rect(center=(x, y))
+        self.image = pygame.image.load('robot_image.png')
+        self.image = pygame.transform.scale(self.image, (50, 60))
+        self.rect = self.image.get_rect(center=(random.randint(0, width), random.randint(0, height)))
         self.ambiente = ambiente
         self.width = width
         self.height = height
         self.controlador = controlador
-        # Velocidad y dirección iniciales aleatorias
         self.velocity = [random.choice([-1, 1]), random.choice([-4, 4])]
+        self.current_task = None
         
     def update(self):
-        # Mover el robot
-        self.rect.x += self.velocity[0]
-        self.rect.y += self.velocity[1]
-
-        # Comprobar colisión con los bordes y ajustar la dirección
-        if self.rect.left <= 0 or self.rect.right >= self.width or self.rect.top <= 0 or self.rect.bottom >= self.height:
-            self.adjust_direction()
-
-        # Detectar y marcar suciedad a su paso
+        if not self.current_task:
+            self.find_task()
+        self.move()
         self.detect_and_mark_dirt()
 
+    def find_task(self):
+        # Intenta obtener una tarea de limpieza si no tiene ninguna
+        for cell in self.ambiente.controlador.detected_dirt_cells:
+            if self.ambiente.controlador.assign_task_to_robot(cell, id(self)):
+                self.current_task = cell
+                print(f"Robot {id(self)} ha sido asignado a la celda {cell}.")
+                break
+
+
+    def move(self):
+        if self.current_task:
+            # Moverse hacia la celda asignada
+            target_pos = self.ambiente.centers[self.current_task[1]][self.current_task[0]]
+            self.rect.center = target_pos  # Simplificación del movimiento
+            # Limpiar la celda y notificar al controlador
+            self.ambiente.grid[self.current_task[1]][self.current_task[0]] = 0
+            self.controlador.task_completed(self.current_task, id(self))
+            self.current_task = None
+        else:
+            # Movimiento aleatorio como antes
+            self.rect.x += self.velocity[0]
+            self.rect.y += self.velocity[1]
+            self.adjust_direction()
+            
     def adjust_direction(self):
         # Calcular un nuevo ángulo aleatorio para el movimiento
         angle = random.uniform(0, 2 * math.pi)
@@ -43,11 +56,6 @@ class Robot(pygame.sprite.Sprite):
         self.rect.y = max(0, min(self.rect.y, self.height - self.rect.height))
 
     def detect_and_mark_dirt(self):
-        # Detecta suciedad dentro de un radio de 80 píxeles
-        dirty_cells = self.ambiente.get_dirty_cells_within_radius(
-            self.rect.centerx, self.rect.centery, 80)
-        
-        for cell_x, cell_y in dirty_cells:
-            # Verifica si la celda ya ha sido detectada usando el controlador
-            if self.ambiente.controlador.add_detected_dirt((cell_x, cell_y)):
-                self.ambiente.mark_cell_as_detected(cell_x, cell_y)
+            dirty_cells = self.ambiente.get_dirty_cells_within_radius(self.rect.centerx, self.rect.centery, 80)
+            for cell_x, cell_y in dirty_cells:
+                self.ambiente.controlador.add_detected_dirt((cell_x, cell_y))
