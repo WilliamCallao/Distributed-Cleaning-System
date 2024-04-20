@@ -33,7 +33,18 @@ class Ambiente:
         self.controlador = Controlador()
         self.robots = [
             Robot(self, self.WIDTH, self.HEIGHT, self.controlador),  # Primer robot
-            Robot(self, self.WIDTH, self.HEIGHT, self.controlador)   # Segundo robot
+            Robot(self, self.WIDTH, self.HEIGHT, self.controlador),
+            Robot(self, self.WIDTH, self.HEIGHT, self.controlador),
+            Robot(self, self.WIDTH, self.HEIGHT, self.controlador),
+            Robot(self, self.WIDTH, self.HEIGHT, self.controlador),
+            Robot(self, self.WIDTH, self.HEIGHT, self.controlador),
+            Robot(self, self.WIDTH, self.HEIGHT, self.controlador),
+            Robot(self, self.WIDTH, self.HEIGHT, self.controlador),
+            Robot(self, self.WIDTH, self.HEIGHT, self.controlador),
+            Robot(self, self.WIDTH, self.HEIGHT, self.controlador),
+            Robot(self, self.WIDTH, self.HEIGHT, self.controlador),
+            Robot(self, self.WIDTH, self.HEIGHT, self.controlador),
+            Robot(self, self.WIDTH, self.HEIGHT, self.controlador),
         ]
 
     def detect_dirt_around(self, pos_x, pos_y, radius=800):
@@ -157,7 +168,7 @@ class Ambiente:
         Actualiza el estado del ambiente, añadiendo suciedad aleatoriamente
         cada medio segundo.
         """
-        if time.time() - self.last_dirt_time > 0.5:
+        if time.time() - self.last_dirt_time > 0.1:
             self.add_dirt()
             self.last_dirt_time = time.time()
 

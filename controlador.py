@@ -1,11 +1,20 @@
 class Controlador:
     def __init__(self):
         self.detected_dirt_cells = set()
+        self.reserved_dirt_cells = set()
 
     def add_detected_dirt(self, cell):
         if cell not in self.detected_dirt_cells:
             self.detected_dirt_cells.add(cell)
             print(f"Nueva celda sucia detectada y añadida: {cell}")
+            return True
+        return False
+
+    def reserve_dirt(self, cell):
+        """Reserva una celda sucia para un robot, evitando que otros robots la seleccionen."""
+        if cell in self.detected_dirt_cells:
+            self.detected_dirt_cells.remove(cell)
+            self.reserved_dirt_cells.add(cell)
             return True
         return False
 
@@ -27,3 +36,4 @@ class Controlador:
         if cell in self.detected_dirt_cells:
             self.detected_dirt_cells.remove(cell)
             print(f"Celda sucia en {cell} ha sido limpiada y removida de la lista de detección.")
+        

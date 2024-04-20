@@ -17,12 +17,12 @@ class Robot(pygame.sprite.Sprite):
         self.id = f"Robot({self.rect.centerx}, {self.rect.centery})"  # Identificador único basado en la posición inicial
 
     def update(self):
+        self.detect_and_mark_dirt()
         if self.target_position:
             self.move_to_target()
         else:
             self.random_movement()
-        self.detect_and_mark_dirt()
-        self.report_dirt_info()
+            self.report_dirt_info()
 
 
     def move_to_target(self):
@@ -82,10 +82,14 @@ class Robot(pygame.sprite.Sprite):
     def report_dirt_info(self):
         cell_centers = self.ambiente.get_cell_centers()
         closest_dirt = self.controlador.find_closest_dirt(self.rect.centerx, self.rect.centery, cell_centers)
-        dirt_count = len(self.controlador.detected_dirt_cells)
+        dirt_count = len(self.controlador.detected_dirt_cells) + len(self.controlador.reserved_dirt_cells)  # Considera también las reservadas
+
         if closest_dirt:
             closest_pos = cell_centers[closest_dirt[1]][closest_dirt[0]]
-            self.set_target_position(closest_pos[0], closest_pos[1])
-            print(f"{self.id}: hay {dirt_count} celdas sucias detectadas. La más cercana está en {closest_pos}.")
+            if self.controlador.reserve_dirt(closest_dirt):
+                self.set_target_position(closest_pos[0], closest_pos[1])
+                print(f"{self.id}: {dirt_count} sucias. La más cercana {closest_pos}.")
+            else:
+                print(f"{self.id}: Buscando nueva celda...")
         else:
-            print(f"{self.id}: No hay celdas sucias detectadas.")
+            print(f"{self.id}: No hay celdas sucias detectadas o disponibles.")
