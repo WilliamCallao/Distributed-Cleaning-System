@@ -30,6 +30,7 @@ class Robot(pygame.sprite.Sprite):
         dx, dy = target_x - self.rect.centerx, target_y - self.rect.centery
         distance = math.sqrt(dx**2 + dy**2)
         if distance > 20:  # Aumentamos el umbral a 20 para una mayor tolerancia
+            self.reassess_target()
             speed = min(4, distance / 10)  # Ajustar la velocidad basada en la distancia
             norm_dx, norm_dy = dx / distance, dy / distance
             self.rect.x += int(norm_dx * speed)
@@ -93,3 +94,24 @@ class Robot(pygame.sprite.Sprite):
                 print(f"{self.id}: Buscando nueva celda...")
         else:
             print(f"{self.id}: No hay celdas sucias detectadas o disponibles.")
+
+    def reassess_target(self):
+        current_target_grid_x = self.target_position[0] // self.ambiente.SQUARE_SIZE
+        current_target_grid_y = self.target_position[1] // self.ambiente.SQUARE_SIZE
+        current_target_pos = (self.target_position[0], self.target_position[1])
+
+        cell_centers = self.ambiente.get_cell_centers()
+        closest_dirt = self.controlador.find_closest_dirt(self.rect.centerx, self.rect.centery, cell_centers)
+
+        if closest_dirt:
+            closest_dirt_pos = cell_centers[closest_dirt[1]][closest_dirt[0]]
+            distance_to_current_target = math.sqrt((current_target_pos[0] - self.rect.centerx)**2 + (current_target_pos[1] - self.rect.centery)**2)
+            distance_to_new_target = math.sqrt((closest_dirt_pos[0] - self.rect.centerx)**2 + (closest_dirt_pos[1] - self.rect.centery)**2)
+
+            # Solo reasignar si el nuevo objetivo está al menos a mitad de camino hacia el objetivo actual
+            if distance_to_new_target < distance_to_current_target / 2:
+                if self.controlador.reserve_dirt(closest_dirt):
+                    self.controlador.release_dirt((current_target_grid_x, current_target_grid_y))
+                    self.set_target_position(closest_dirt_pos[0], closest_dirt_pos[1])
+                    print(f"{self.id}: Cambiado el objetivo a {closest_dirt_pos} por estar significativamente más cerca.")
+                    

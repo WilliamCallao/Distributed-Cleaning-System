@@ -34,16 +34,9 @@ class Ambiente:
         self.robots = [
             Robot(self, self.WIDTH, self.HEIGHT, self.controlador),  # Primer robot
             Robot(self, self.WIDTH, self.HEIGHT, self.controlador),
+            Robot(self, self.WIDTH, self.HEIGHT, self.controlador),  # Primer robot
             Robot(self, self.WIDTH, self.HEIGHT, self.controlador),
-            Robot(self, self.WIDTH, self.HEIGHT, self.controlador),
-            Robot(self, self.WIDTH, self.HEIGHT, self.controlador),
-            Robot(self, self.WIDTH, self.HEIGHT, self.controlador),
-            Robot(self, self.WIDTH, self.HEIGHT, self.controlador),
-            Robot(self, self.WIDTH, self.HEIGHT, self.controlador),
-            Robot(self, self.WIDTH, self.HEIGHT, self.controlador),
-            Robot(self, self.WIDTH, self.HEIGHT, self.controlador),
-            Robot(self, self.WIDTH, self.HEIGHT, self.controlador),
-            Robot(self, self.WIDTH, self.HEIGHT, self.controlador),
+            Robot(self, self.WIDTH, self.HEIGHT, self.controlador),  # Primer robot
             Robot(self, self.WIDTH, self.HEIGHT, self.controlador),
         ]
 
@@ -80,6 +73,7 @@ class Ambiente:
     #     self.clean_cell(pos)
         
     def handle_click(self, pos):
+        self.controlador.release_all_dirt()
         print(f"Click detected at: {pos}")  # Mostrar la posición del clic
         x, y = pos
         grid_x = x // self.SQUARE_SIZE
@@ -88,6 +82,7 @@ class Ambiente:
         print(f"Target set to: {target_x}, {target_y}")  # Mostrar la posición objetivo calculada
         for robot in self.robots:
             robot.set_target_position(target_x, target_y)
+            
             
     def get_cell_centers(self):
         return self.centers
@@ -168,7 +163,7 @@ class Ambiente:
         Actualiza el estado del ambiente, añadiendo suciedad aleatoriamente
         cada medio segundo.
         """
-        if time.time() - self.last_dirt_time > 0.1:
+        if time.time() - self.last_dirt_time > 0.2:
             self.add_dirt()
             self.last_dirt_time = time.time()
 

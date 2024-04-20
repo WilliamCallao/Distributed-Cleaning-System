@@ -36,4 +36,18 @@ class Controlador:
         if cell in self.detected_dirt_cells:
             self.detected_dirt_cells.remove(cell)
             print(f"Celda sucia en {cell} ha sido limpiada y removida de la lista de detección.")
-        
+    
+    def release_dirt(self, cell):
+        if cell in self.reserved_dirt_cells:
+            self.reserved_dirt_cells.remove(cell)
+            self.detected_dirt_cells.add(cell)
+            print(f"Celda sucia en {cell} ha sido liberada y está disponible nuevamente.")
+
+    def release_all_dirt(self):
+        """
+        Libera todas las celdas reservadas, devolviéndolas al conjunto de celdas detectadas.
+        """
+        if self.reserved_dirt_cells:
+            print(f"Liberando todas las celdas reservadas: {self.reserved_dirt_cells}")
+            self.detected_dirt_cells.update(self.reserved_dirt_cells)
+            self.reserved_dirt_cells.clear()
