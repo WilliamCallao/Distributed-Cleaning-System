@@ -77,7 +77,12 @@ class Ambiente:
         print(f"Target set to: {target_x}, {target_y}")  # Mostrar la posición objetivo calculada
         for robot in self.robots:
             robot.set_target_position(target_x, target_y)
+            
+    def get_cell_centers(self):
+        return self.centers
 
+    def get_grid(self):
+        return self.grid
     
     def add_dirt(self):
         """
@@ -152,9 +157,9 @@ class Ambiente:
         Actualiza el estado del ambiente, añadiendo suciedad aleatoriamente
         cada medio segundo.
         """
-        # if time.time() - self.last_dirt_time > 0.01:
-        self.add_dirt()
-        self.last_dirt_time = time.time()
+        if time.time() - self.last_dirt_time > 0.5:
+            self.add_dirt()
+            self.last_dirt_time = time.time()
 
     def clean_cell(self, pos):
         """

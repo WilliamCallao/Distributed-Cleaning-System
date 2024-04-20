@@ -22,6 +22,8 @@ class Robot(pygame.sprite.Sprite):
         else:
             self.random_movement()
         self.detect_and_mark_dirt()
+        self.report_dirt_info()
+
 
     def move_to_target(self):
         target_x, target_y = self.target_position
@@ -71,3 +73,13 @@ class Robot(pygame.sprite.Sprite):
     def set_target_position(self, x, y):
         self.target_position = (x, y)
         print(f"{self.id} set target to ({x}, {y})")
+
+    def report_dirt_info(self):
+        cell_centers = self.ambiente.get_cell_centers()
+        closest_dirt = self.controlador.find_closest_dirt(self.rect.centerx, self.rect.centery, cell_centers)
+        dirt_count = len(self.controlador.detected_dirt_cells)
+        if closest_dirt:
+            closest_pos = cell_centers[closest_dirt[1]][closest_dirt[0]]
+            print(f"{self.id}: hay {dirt_count}. La más cercana {closest_pos}.")
+        else:
+            print(f"{self.id}: No hay celdas sucias detectadas.")
