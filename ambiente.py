@@ -59,15 +59,26 @@ class Ambiente:
                     print(f"Suciedad detectada y marcada en ({center_x}, {center_y})")
         return dirty_cells
 
+    # def handle_click(self, pos):
+    #     """
+    #     Maneja los eventos de clic del mouse para limpiar directamente la celda en la posición clickeada.
+        
+    #     Args:
+    #         pos (tuple): Posición (x, y) del clic del mouse en la ventana.
+    #     """
+    #     self.clean_cell(pos)
+        
     def handle_click(self, pos):
-        """
-        Maneja los eventos de clic del mouse para limpiar directamente la celda en la posición clickeada.
-        
-        Args:
-            pos (tuple): Posición (x, y) del clic del mouse en la ventana.
-        """
-        self.clean_cell(pos)
-        
+        print(f"Click detected at: {pos}")  # Mostrar la posición del clic
+        x, y = pos
+        grid_x = x // self.SQUARE_SIZE
+        grid_y = y // self.SQUARE_SIZE
+        target_x, target_y = self.centers[grid_y][grid_x]
+        print(f"Target set to: {target_x}, {target_y}")  # Mostrar la posición objetivo calculada
+        for robot in self.robots:
+            robot.set_target_position(target_x, target_y)
+
+    
     def add_dirt(self):
         """
         Añade suciedad en una posición aleatoria dentro de la grilla que esté
