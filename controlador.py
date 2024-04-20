@@ -19,3 +19,11 @@ class Controlador:
             closest_dirt = min(self.detected_dirt_cells, key=lambda cell: (cell_centers[cell[1]][cell[0]][0] - x)**2 + (cell_centers[cell[1]][cell[0]][1] - y)**2)
             return closest_dirt
         return None
+
+    def remove_dirt(self, cell):
+        """
+        Elimina una celda de la lista de celdas sucias detectadas.
+        """
+        if cell in self.detected_dirt_cells:
+            self.detected_dirt_cells.remove(cell)
+            print(f"Celda sucia en {cell} ha sido limpiada y removida de la lista de detección.")

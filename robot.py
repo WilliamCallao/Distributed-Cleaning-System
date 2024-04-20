@@ -29,14 +29,19 @@ class Robot(pygame.sprite.Sprite):
         target_x, target_y = self.target_position
         dx, dy = target_x - self.rect.centerx, target_y - self.rect.centery
         distance = math.sqrt(dx**2 + dy**2)
-        if distance > 20:  # Aumentamos el umbral a 10 para una mayor tolerancia
+        if distance > 20:  # Aumentamos el umbral a 20 para una mayor tolerancia
             speed = min(4, distance / 10)  # Ajustar la velocidad basada en la distancia
             norm_dx, norm_dy = dx / distance, dy / distance
             self.rect.x += int(norm_dx * speed)
             self.rect.y += int(norm_dy * speed)
         else:
             print(f"{self.id} reached the target at ({target_x}, {target_y})")
-            self.target_position = None  # Resetear la posición objetivo al llegar
+            # Convertir la posición de píxeles a índices de grilla
+            grid_x = target_x // self.ambiente.SQUARE_SIZE
+            grid_y = target_y // self.ambiente.SQUARE_SIZE
+            self.ambiente.clean_cell((target_x, target_y))  # Limpia la celda en la grilla
+            self.controlador.remove_dirt((grid_x, grid_y))  # Elimina la celda de la lista de celdas sucias
+            self.target_position = None
 
     def random_movement(self):
         self.rect.x += self.velocity[0]
@@ -80,6 +85,7 @@ class Robot(pygame.sprite.Sprite):
         dirt_count = len(self.controlador.detected_dirt_cells)
         if closest_dirt:
             closest_pos = cell_centers[closest_dirt[1]][closest_dirt[0]]
-            print(f"{self.id}: hay {dirt_count}. La más cercana {closest_pos}.")
+            self.set_target_position(closest_pos[0], closest_pos[1])
+            print(f"{self.id}: hay {dirt_count} celdas sucias detectadas. La más cercana está en {closest_pos}.")
         else:
             print(f"{self.id}: No hay celdas sucias detectadas.")
