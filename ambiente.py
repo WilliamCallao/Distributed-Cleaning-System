@@ -16,8 +16,8 @@ class Ambiente:
         """
         pygame.init()
         self.WIDTH, self.HEIGHT = 800, 600
-        self.COLS, self.ROWS = 20, 15
-        self.SQUARE_SIZE = 40
+        self.COLS, self.ROWS = 40, 30
+        self.SQUARE_SIZE = 20
         self.WHITE = (255, 255, 255)
         self.GRAY = (200, 200, 200)
         self.RED = (255, 0, 0)
@@ -163,7 +163,7 @@ class Ambiente:
         Actualiza el estado del ambiente, añadiendo suciedad aleatoriamente
         cada medio segundo.
         """
-        if time.time() - self.last_dirt_time > 0.2:
+        if time.time() - self.last_dirt_time > 0.5:
             self.add_dirt()
             self.last_dirt_time = time.time()
 
