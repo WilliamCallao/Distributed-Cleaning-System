@@ -16,6 +16,14 @@ class Robot(pygame.sprite.Sprite):
         self.velocity = [random.choice([-1, 1]), random.choice([-4, 4])]
         self.target_position = None
         self.id = f"Robot({self.rect.centerx}, {self.rect.centery})"  # Identificador único basado en la posición inicial
+        self.assigned_dirt = None
+    
+    def remove(self):
+        # Libera cualquier tarea asignada cuando el robot es eliminado
+        if self.assigned_dirt:
+            self.controlador.release_dirt(self.assigned_dirt)
+            print(f"{self.id} ha liberado la suciedad asignada en {self.assigned_dirt} antes de ser eliminado.")
+
 
     def update(self):
         self.detect_and_mark_dirt()
@@ -55,10 +63,22 @@ class Robot(pygame.sprite.Sprite):
         # Verifica colisión con el borde izquierdo o derecho
         if self.rect.left <= 0 or self.rect.right >= self.width:
             self.velocity[0] = -self.velocity[0]  # Invierte la velocidad horizontal
+            self.velocity[1] = random.choice([-1, 1]) * random.uniform(0.5, 4)  # Cambio aleatorio en la dirección vertical
+
         # Verifica colisión con el borde superior o inferior
         if self.rect.top <= 0 or self.rect.bottom >= self.height:
             self.velocity[1] = -self.velocity[1]  # Invierte la velocidad vertical
+            self.velocity[0] = random.choice([-1, 1]) * random.uniform(0.5, 4)  # Cambio aleatorio en la dirección horizontal
 
+        # Asegurarse de que el robot no quede parcialmente fuera de los límites
+        self.rect.x = max(0, min(self.rect.x, self.width - self.rect.width))
+        self.rect.y = max(0, min(self.rect.y, self.height - self.rect.height))
+
+        # Normalizar la velocidad para mantener la velocidad constante y asegurarse de que el movimiento sea fluido
+        speed = math.sqrt(self.velocity[0]**2 + self.velocity[1]**2)
+        norm_vx, norm_vy = self.velocity[0] / speed, self.velocity[1] / speed
+        self.velocity[0] = norm_vx * speed
+        self.velocity[1] = norm_vy * speed
         # Asegurarse de que el robot no quede parcialmente fuera de los límites
         self.rect.x = max(0, min(self.rect.x, self.width - self.rect.width))
         self.rect.y = max(0, min(self.rect.y, self.height - self.rect.height))
@@ -79,7 +99,12 @@ class Robot(pygame.sprite.Sprite):
 
     def set_target_position(self, x, y):
         self.target_position = (x, y)
+        grid_x = x // self.ambiente.SQUARE_SIZE
+        grid_y = y // self.ambiente.SQUARE_SIZE
+        self.assigned_dirt = (grid_x, grid_y)  # Guarda la tarea actual asignada
         print(f"{self.id} set target to ({x}, {y})")
+
+
 
     def report_dirt_info(self):
         cell_centers = self.ambiente.get_cell_centers()

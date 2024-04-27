@@ -12,15 +12,15 @@ class Ambiente:
         self.WIDTH, self.HEIGHT = 800, 600
         self.COLS, self.ROWS = 40, 30
         self.SQUARE_SIZE = 20
-        self.BUTTON_COLOR = (100, 100, 255)  # Color claro para los botones
+        self.BUTTON_COLOR = (30, 30, 30)  # Color claro para los botones
         self.BUTTON_HOVER_COLOR = (140, 140, 255)  # Color cuando el mouse está sobre el botón
         self.BUTTON_CLICK_COLOR = (80, 80, 220) 
         self.BUTTON_TEXT_COLOR = (255, 255, 255)
         self.WHITE = (255, 255, 255)
         self.GRAY = (200, 200, 200)
         self.RED = (255, 0, 0)
-        self.DIRT_COLOR = (139, 69, 19)
-        self.DETECTED_DIRT_COLOR = (128, 0, 128)
+        self.DIRT_COLOR = (215, 171, 136)
+        self.DETECTED_DIRT_COLOR = (90, 127, 184)
         self.screen = pygame.display.set_mode((self.WIDTH, self.HEIGHT))
         pygame.display.set_caption("Simulación de Ambiente de Limpieza")
         self.grid = np.zeros((self.ROWS, self.COLS))
@@ -42,7 +42,7 @@ class Ambiente:
             "robot_minus": {"rect": pygame.Rect(100, 10, 80, 30), "label": "-Robots"},
             "dirt_plus": {"rect": pygame.Rect(190, 10, 80, 30), "label": "+Dirt"},
             "dirt_minus": {"rect": pygame.Rect(280, 10, 80, 30), "label": "-Dirt"},
-            "dirt_stop": {"rect": pygame.Rect(370, 10, 100, 30), "label": "Stop/Start Dirt"}
+            "dirt_stop": {"rect": pygame.Rect(370, 10, 150, 30), "label": "Stop/Start Dirt"}
         }
         
     def add_robot(self):
@@ -51,7 +51,9 @@ class Ambiente:
 
     def remove_robot(self):
         if self.robots:
-            self.robots.pop()
+            robot = self.robots.pop()
+            robot.remove()  # Asegura que el robot libere sus asignaciones antes de ser eliminado
+            print(f"Robot eliminado: {robot.id}")
 
     def adjust_dirt_delay(self, increment):
         if increment:
@@ -170,13 +172,13 @@ class Ambiente:
         Dibuja la grilla en la ventana de Pygame. Cada cuadrícula es delineada y
         un punto rojo es colocado en su centro.
         """
-        for x in range(self.COLS):
-            for y in range(self.ROWS):
-                rect = pygame.Rect(x * self.SQUARE_SIZE, y * self.SQUARE_SIZE,
-                                self.SQUARE_SIZE, self.SQUARE_SIZE)
-                pygame.draw.rect(self.screen, self.GRAY, rect, 1)
-                center_x, center_y = self.centers[y, x]
-                pygame.draw.circle(self.screen, self.RED, (center_x, center_y), 2)
+        # for x in range(self.COLS):
+        #     for y in range(self.ROWS):
+        #         rect = pygame.Rect(x * self.SQUARE_SIZE, y * self.SQUARE_SIZE,
+        #                         self.SQUARE_SIZE, self.SQUARE_SIZE)
+        #         pygame.draw.rect(self.screen, self.GRAY, rect, 1)
+        #         center_x, center_y = self.centers[y, x]
+        #         pygame.draw.circle(self.screen, self.RED, (center_x, center_y), 2)
 
     def draw_dirt(self):
         """
