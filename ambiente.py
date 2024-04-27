@@ -13,6 +13,8 @@ class Ambiente:
         self.COLS, self.ROWS = 40, 30
         self.SQUARE_SIZE = 20
         self.BUTTON_COLOR = (100, 100, 255)  # Color claro para los botones
+        self.BUTTON_HOVER_COLOR = (140, 140, 255)  # Color cuando el mouse está sobre el botón
+        self.BUTTON_CLICK_COLOR = (80, 80, 220) 
         self.BUTTON_TEXT_COLOR = (255, 255, 255)
         self.WHITE = (255, 255, 255)
         self.GRAY = (200, 200, 200)
@@ -28,18 +30,19 @@ class Ambiente:
         self.last_dirt_time = time.time()
         self.dirt_delay = 0.5  # Intervalo inicial en segundos
         self.controlador = Controlador()
-        self.robots = [Robot(self, self.WIDTH, self.HEIGHT, self.controlador) for _ in range(3)]
+        self.robots = [Robot(self, self.WIDTH, self.HEIGHT, self.controlador) for _ in range(0)]
         self.font = pygame.font.Font(None, 24)
         self.setup_buttons()  # Initialize buttons here
-
+        
+        self.mouse_down = False
+        
     def setup_buttons(self):
-        # Ajustar la posición y tamaño de los botones para hacerlos más visibles y accesibles
         self.buttons = {
-            "robot_plus": {"rect": pygame.Rect(10, 10, 50, 30), "label": "+Robots"},
-            "robot_minus": {"rect": pygame.Rect(70, 10, 50, 30), "label": "-Robots"},
-            "dirt_plus": {"rect": pygame.Rect(130, 10, 50, 30), "label": "+Dirt"},
-            "dirt_minus": {"rect": pygame.Rect(190, 10, 50, 30), "label": "-Dirt"},
-            "dirt_stop": {"rect": pygame.Rect(250, 10, 80, 30), "label": "Stop/Start Dirt"}
+            "robot_plus": {"rect": pygame.Rect(10, 10, 80, 30), "label": "+Robots"},
+            "robot_minus": {"rect": pygame.Rect(100, 10, 80, 30), "label": "-Robots"},
+            "dirt_plus": {"rect": pygame.Rect(190, 10, 80, 30), "label": "+Dirt"},
+            "dirt_minus": {"rect": pygame.Rect(280, 10, 80, 30), "label": "-Dirt"},
+            "dirt_stop": {"rect": pygame.Rect(370, 10, 100, 30), "label": "Stop/Start Dirt"}
         }
         
     def add_robot(self):
@@ -64,8 +67,16 @@ class Ambiente:
 
 
     def draw_buttons(self):
-        for button in self.buttons.values():
-            pygame.draw.rect(self.screen, self.BUTTON_COLOR, button["rect"])  # Fondo del botón
+        mouse_pos = pygame.mouse.get_pos()
+        for key, button in self.buttons.items():
+            if button["rect"].collidepoint(mouse_pos):
+                if self.mouse_down:
+                    color = self.BUTTON_CLICK_COLOR
+                else:
+                    color = self.BUTTON_HOVER_COLOR
+            else:
+                color = self.BUTTON_COLOR
+            pygame.draw.rect(self.screen, color, button["rect"])
             label = self.font.render(button["label"], True, self.BUTTON_TEXT_COLOR)
             label_pos = label.get_rect(center=button["rect"].center)
             self.screen.blit(label, label_pos)
@@ -73,16 +84,7 @@ class Ambiente:
     def handle_click(self, pos):
         for key, button in self.buttons.items():
             if button["rect"].collidepoint(pos):
-                if key == "robot_plus":
-                    self.add_robot()
-                elif key == "robot_minus":
-                    self.remove_robot()
-                elif key == "dirt_plus":
-                    self.adjust_dirt_delay(True)
-                elif key == "dirt_minus":
-                    self.adjust_dirt_delay(False)
-                elif key == "dirt_stop":
-                    self.toggle_dirt()
+                getattr(self, key)()  # Call the method based on the button key
                 return
         
     def detect_dirt_around(self, pos_x, pos_y, radius=800):
@@ -244,18 +246,19 @@ class Ambiente:
             print(f"Celda limpiada en posición ({grid_x}, {grid_y}).")
 
     def run(self):
-        """
-        Ejecuta el bucle principal de la aplicación, gestionando eventos de
-        Pygame y actualizando la visualización.
-        """
         running = True
         while running:
+            self.mouse_down = False
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     running = False
-                if event.type == pygame.MOUSEBUTTONDOWN:
+                elif event.type == pygame.MOUSEBUTTONDOWN:
                     if event.button == 1:  # Left click
+                        self.mouse_down = True
                         self.handle_click(event.pos)
+                elif event.type == pygame.MOUSEBUTTONUP:
+                    if event.button == 1:
+                        self.mouse_down = False
             
             for robot in self.robots:
                 robot.update()
