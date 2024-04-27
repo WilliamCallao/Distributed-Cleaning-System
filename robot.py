@@ -7,6 +7,7 @@ class Robot(pygame.sprite.Sprite):
         super().__init__()
         self.image = pygame.image.load('robot_image.png')
         self.image = pygame.transform.scale(self.image, (50, 60))
+        # self.rect = self.image.get_rect(center=(20, 20))
         self.rect = self.image.get_rect(center=(random.randint(0, width), random.randint(0, height)))
         self.ambiente = ambiente
         self.width = width
