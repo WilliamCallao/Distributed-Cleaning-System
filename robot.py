@@ -77,10 +77,12 @@ class Robot(pygame.sprite.Sprite):
 
     def adjust_direction(self):
         # Ajusta la dirección del movimiento si el robot alcanza los límites del área.
-        if self.rect.left <= 0 or self.rect.right >= self.width:
-            self.velocity[0] = -self.velocity[0]
-        if self.rect.top <= 0 or self.rect.bottom >= self.height:
-            self.velocity[1] = -self.velocity[1]
+        if self.rect.left <= 0 or self.rect.right >= self.width or self.rect.top <= 0 or self.rect.bottom >= self.height:
+            angle = math.atan2(self.velocity[1], self.velocity[0])
+            random_angle = random.uniform(-math.pi, math.pi)
+            speed = math.sqrt(self.velocity[0]**2 + self.velocity[1]**2)
+            self.velocity[0] = speed * math.cos(angle + random_angle)
+            self.velocity[1] = speed * math.sin(angle + random_angle)
         self.rect.x = max(0, min(self.rect.x, self.width - self.rect.width))
         self.rect.y = max(0, min(self.rect.y, self.height - self.rect.height))
 
