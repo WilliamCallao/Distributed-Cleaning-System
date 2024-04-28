@@ -12,8 +12,8 @@ class Ambiente:
         self.WIDTH, self.HEIGHT = 800, 600
         self.COLS, self.ROWS = 40, 30
         self.SQUARE_SIZE = 20
-        self.BUTTON_COLOR = (30, 30, 30)  # Color claro para los botones
-        self.BUTTON_HOVER_COLOR = (140, 140, 255)  # Color cuando el mouse está sobre el botón
+        self.BUTTON_COLOR = (30, 30, 30)
+        self.BUTTON_HOVER_COLOR = (140, 140, 255)
         self.BUTTON_CLICK_COLOR = (80, 80, 220) 
         self.BUTTON_TEXT_COLOR = (255, 255, 255)
         self.WHITE = (255, 255, 255)
@@ -28,11 +28,11 @@ class Ambiente:
                                 y * self.SQUARE_SIZE + self.SQUARE_SIZE // 2) for x in range(self.COLS)]
                                 for y in range(self.ROWS)])
         self.last_dirt_time = time.time()
-        self.dirt_delay = 0.5  # Intervalo inicial en segundos
+        self.dirt_delay = 0.5
         self.controlador = Controlador()
-        self.robots = [Robot(self, self.WIDTH, self.HEIGHT, self.controlador) for _ in range(0)]
+        self.robots = [Robot(self, self.WIDTH, self.HEIGHT, self.controlador) for _ in range(1)]
         self.font = pygame.font.Font(None, 24)
-        self.setup_buttons()  # Initialize buttons here
+        self.setup_buttons()
         
         self.mouse_down = False
         
@@ -46,26 +46,26 @@ class Ambiente:
         }
         
     def add_robot(self):
-        if len(self.robots) < 10:  # Límite superior de robots
+        if len(self.robots) < 10:
             self.robots.append(Robot(self, self.WIDTH, self.HEIGHT, self.controlador))
 
     def remove_robot(self):
         if self.robots:
             robot = self.robots.pop()
-            robot.remove()  # Asegura que el robot libere sus asignaciones antes de ser eliminado
+            robot.remove() 
             print(f"Robot eliminado: {robot.id}")
 
     def adjust_dirt_delay(self, increment):
         if increment:
-            self.dirt_delay = max(0.1, self.dirt_delay - 0.1)  # Aumentar frecuencia
+            self.dirt_delay = max(0.1, self.dirt_delay - 0.1) 
         else:
-            self.dirt_delay += 0.1  # Disminuir frecuencia
+            self.dirt_delay += 0.1 
 
     def toggle_dirt(self):
         if self.dirt_delay == float('inf'):
-            self.dirt_delay = 0.5  # Restablecer al valor predeterminado
+            self.dirt_delay = 0.5
         else:
-            self.dirt_delay = float('inf')  # Detener la generación de suciedad
+            self.dirt_delay = float('inf')
 
 
     def draw_buttons(self):
@@ -86,7 +86,7 @@ class Ambiente:
     def handle_click(self, pos):
         for key, button in self.buttons.items():
             if button["rect"].collidepoint(pos):
-                getattr(self, key)()  # Call the method based on the button key
+                getattr(self, key)()
                 return
         
     def detect_dirt_around(self, pos_x, pos_y, radius=800):
@@ -111,29 +111,8 @@ class Ambiente:
                     self.mark_cell_as_detected(x, y)
                     print(f"Suciedad detectada y marcada en ({center_x}, {center_y})")
         return dirty_cells
-
-    # def handle_click(self, pos):
-    #     """
-    #     Maneja los eventos de clic del mouse para limpiar directamente la celda en la posición clickeada.
-        
-    #     Args:
-    #         pos (tuple): Posición (x, y) del clic del mouse en la ventana.
-    #     """
-    #     self.clean_cell(pos)
-        
-    # def handle_click(self, pos):
-    #     self.controlador.release_all_dirt()
-    #     print(f"Click detected at: {pos}")  # Mostrar la posición del clic
-    #     x, y = pos
-    #     grid_x = x // self.SQUARE_SIZE
-    #     grid_y = y // self.SQUARE_SIZE
-    #     target_x, target_y = self.centers[grid_y][grid_x]
-    #     print(f"Target set to: {target_x}, {target_y}")  # Mostrar la posición objetivo calculada
-    #     for robot in self.robots:
-    #         robot.set_target_position(target_x, target_y)
             
     def handle_click(self, pos):
-    # Verifica primero si el clic es sobre alguno de los botones
         for key, button in self.buttons.items():
             if button["rect"].collidepoint(pos):
                 if key == "robot_plus":
@@ -146,9 +125,7 @@ class Ambiente:
                     self.adjust_dirt_delay(False)
                 elif key == "dirt_stop":
                     self.toggle_dirt()
-                return  # Finaliza la función después de manejar un clic de botón
-        
-        # A continuación, podrías agregar una impresión o algún registro de que el clic fue ignorado
+                return
         print("Clic fuera de los botones: Ignorado")
     
     def get_cell_centers(self):
@@ -223,7 +200,7 @@ class Ambiente:
             y (int): Coordenada y de la celda en la grilla.
         """
         if 0 <= x < self.COLS and 0 <= y < self.ROWS and self.grid[y, x] == 1:
-            self.grid[y, x] = 2  # Mark as detected dirt with a different color
+            self.grid[y, x] = 2
 
     def update(self):
         current_time = time.time()
@@ -240,11 +217,11 @@ class Ambiente:
             pos (tuple): Posición (x, y) del clic del mouse en píxeles.
         """
         x, y = pos
-        grid_x = x // self.SQUARE_SIZE  # Convierte la coordenada x del clic en índice de columna de la grilla
-        grid_y = y // self.SQUARE_SIZE  # Convierte la coordenada y del clic en índice de fila de la grilla
+        grid_x = x // self.SQUARE_SIZE 
+        grid_y = y // self.SQUARE_SIZE
 
-        if 0 <= grid_x < self.COLS and 0 <= grid_y < self.ROWS:  # Verifica que las coordenadas estén dentro de los límites de la grilla
-            self.grid[grid_y, grid_x] = 0  # Cambia el estado de la celda a limpio
+        if 0 <= grid_x < self.COLS and 0 <= grid_y < self.ROWS:
+            self.grid[grid_y, grid_x] = 0
             print(f"Celda limpiada en posición ({grid_x}, {grid_y}).")
 
     def run(self):
@@ -255,7 +232,7 @@ class Ambiente:
                 if event.type == pygame.QUIT:
                     running = False
                 elif event.type == pygame.MOUSEBUTTONDOWN:
-                    if event.button == 1:  # Left click
+                    if event.button == 1:
                         self.mouse_down = True
                         self.handle_click(event.pos)
                 elif event.type == pygame.MOUSEBUTTONUP:
@@ -270,9 +247,6 @@ class Ambiente:
             self.draw_grid()
             self.draw_dirt()
             self.draw_buttons()
-            
-            # self.screen.blit(self.robot.image, self.robot.rect)
-            # Dibuja cada robot
             
             for robot in self.robots:
                 self.screen.blit(robot.image, robot.rect)
