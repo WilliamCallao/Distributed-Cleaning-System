@@ -25,10 +25,11 @@ class Robot(pygame.sprite.Sprite):
         else:
             self.random_movement()
             self.report_dirt_info()
+        self.avoid_collisions()
 
     def detect_and_mark_dirt(self):
         # Detecta y marca la suciedad dentro de un radio específico.
-        dirty_cells = self.ambiente.get_dirty_cells_within_radius(self.rect.centerx, self.rect.centery, 80)
+        dirty_cells = self.ambiente.get_dirty_cells_within_radius(self.rect.centerx, self.rect.centery, 100)
         for cell_x, cell_y in dirty_cells:
             if self.ambiente.controlador.add_detected_dirt((cell_x, cell_y)):
                 self.ambiente.mark_cell_as_detected(cell_x, cell_y)
@@ -85,6 +86,19 @@ class Robot(pygame.sprite.Sprite):
             self.velocity[1] = speed * math.sin(angle + random_angle)
         self.rect.x = max(0, min(self.rect.x, self.width - self.rect.width))
         self.rect.y = max(0, min(self.rect.y, self.height - self.rect.height))
+
+    def avoid_collisions(self):
+        # Lógica de evasión de colisiones para evitar que los robots se queden atascados.
+        separation_distance = 30
+        for robot in self.ambiente.robots:
+            if robot != self:
+                distance = math.sqrt((self.rect.centerx - robot.rect.centerx)**2 + (self.rect.centery - robot.rect.centery)**2)
+                if distance < separation_distance:
+                    angle = math.atan2(self.rect.centery - robot.rect.centery, self.rect.centerx - robot.rect.centerx)
+                    self.rect.x += math.cos(angle) * 2
+                    self.rect.y += math.sin(angle) * 2
+                    # Movimiento adicional hacia la derecha para evitar trabarse
+                    self.rect.x += math.sin(angle) * 1
 
     def set_target_position(self, x, y):
         # Establece una nueva posición objetivo para el robot.
