@@ -110,9 +110,10 @@ class Ambiente:
     
     def add_dirt(self):
         empty = np.where(self.grid == 0)
-        if empty[0].size > 0:
-            idx = random.choice(range(len(empty[0])))
-            self.grid[empty[0][idx], empty[1][idx]] = 1
+        valid_indices = [(y, x) for y, x in zip(empty[0], empty[1]) if y >= 3]
+        if valid_indices:
+            idx = random.choice(valid_indices)
+            self.grid[idx[0], idx[1]] = 1
 
     def draw_grid(self):
         pass
