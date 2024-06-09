@@ -1,36 +1,34 @@
-# Sistema de Limpieza autónomo con Inteligencia Artificial Distribuida
 
-## Instrucciones de Instalación
+# Sistema de Limpieza Automatizado con IA Distribuida
 
-Para ejecutar este proyecto, sigue estos pasos:
+## Descripción del Proyecto
+Este proyecto implica el diseño de un sistema de limpieza automatizado para grandes espacios como aeropuertos, centros comerciales y oficinas. El sistema utiliza IA distribuida para coordinar múltiples robots aspiradores, cada uno equipado con sensores para detectar y limpiar suciedad.
 
-### 1. Clonar el Repositorio
+## Características
+- **Coordinador Central**: Optimiza la comunicación y asignación de tareas entre los robots.
+- **Robots Autónomos**: Equipados con sensores para detectar y recoger suciedad.
 
-Primero, necesitas clonar el repositorio a tu máquina local. Puedes hacer esto desde tu terminal utilizando el siguiente comando:
+## Instalación
+Para instalar y ejecutar el proyecto, siga estos pasos:
 
-```bash
-git clone [URL del repositorio]
-```
+1. **Clonar el Repositorio**:
+   ```
+   git clone https://github.com/yourusername/Distributed-Cleaning-System.git
+   ```
 
-Asegúrate de reemplazar `[URL del repositorio]` con la URL actual del repositorio de Git.
+2. **Navegar al Directorio del Proyecto**:
+   ```
+   cd Distributed-Cleaning-System
+   ```
 
-### 2. Instalar Dependencias
+3. **Instalar Dependencias**:
+   Asegúrese de tener Python instalado, luego ejecute:
+   ```
+   pip install -r requirements.txt
+   ```
 
-Una vez que hayas clonado el repositorio, navega a la carpeta del proyecto y ejecuta el siguiente comando en la terminal para instalar las dependencias necesarias:
-
-```bash
-cd [nombre-de-la-carpeta-del-proyecto]
-pip install -r requirements.txt
-```
-
-Reemplaza `[nombre-de-la-carpeta-del-proyecto]` con el nombre real de la carpeta a la que clonaste el proyecto.
-
-### 3. Ejecutar el Programa
-
-Para iniciar la simulación, dirígete al archivo principal del proyecto y ejecútalo con Python. Puedes hacerlo con el siguiente comando:
-
-```bash
-python main.py
-```
-
-¡Eso es todo! Ahora deberías ser capaz de ver la simulación en acción.
+4. **Ejecutar la Simulación**:
+   Ejecute el script principal para iniciar la simulación:
+   ```bash
+   python main.py
+   ```
